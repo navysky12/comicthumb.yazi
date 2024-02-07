@@ -12,13 +12,7 @@ function M:peek()
 	end
 end
 
-function M:seek(units)
-	local h = cx.active.current.hovered
-	if h and h.url == self.file.url then
-		local step = ya.clamp(-1, units, 1)
-		ya.manager_emit("peek", { tostring(math.max(0, cx.active.preview.skip + step)), only_if = tostring(self.file.url) })
-	end
-end
+function M:seek() end
 
 function M:preload()
 	local cache = ya.file_cache(self)
