@@ -20,19 +20,13 @@ function M:preload()
 		return 1
 	end
 
-	local output = Command("pdftoppm")
-		:args({ "-singlefile", "-jpeg", "-jpegopt", "quality=75", "-f", tostring(self.skip + 1), tostring(self.file.url) })
+	local output = Command("comicthumb.sh")
+		:args({ tostring(self.file.url) })
 		:stdout(Command.PIPED)
 		:stderr(Command.PIPED)
 		:output()
 
-	if not output then
-		return 0
-	elseif not output.status:success() then
-		local pages = tonumber(output.stderr:match("the last page %((%d+)%)")) or 0
-		if self.skip > 0 and pages > 0 then
-			ya.manager_emit("peek", { tostring(math.max(0, pages - 1)), only_if = tostring(self.file.url), upper_bound = "" })
-		end
+	if not output or not output.status:success() then
 		return 0
 	end
 
