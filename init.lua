@@ -21,7 +21,7 @@ function M:preload()
 	end
 
 	local output = Command("comicthumb.sh")
-		:args({ tostring(self.file.url) })
+		:args({ tostring(self.file.url), "-so" })
 		:stdout(Command.PIPED)
 		:stderr(Command.PIPED)
 		:output()
