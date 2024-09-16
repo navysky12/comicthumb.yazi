@@ -20,18 +20,29 @@ function M:preload()
 		return 1
 	end
 
-	local output = Command("comicthumb.sh")
-		:args({ tostring(self.file.url), "-so" })
+	local list_output = Command("7z")
+		:args({ "-ba", "l", tostring(self.file.url) })
 		:stdout(Command.PIPED)
 		:stderr(Command.PIPED)
 		:output()
 
-	if not output or not output.status:success() then
-		return 0
-	end
+	fs.write(cache, list_output.stdout)
+	local awk_output = Command("awk")
+		:args({
+				[[tolower($0) ~ /\.(jpg|jpeg|png|gif)$/ {print substr($0, index($0,$6))}]],
+				tostring(cache)
+			})
+		:stdout(Command.PIPED)
+		:stderr(Command.PIPED)
+		:output()
 
-	return fs.write(cache, output.stdout) and 1 or 2
+	local extract_output = Command("7z")
+		:args({ "-so", "e", tostring(self.file.url), awk_output.stdout:match("(.-)\n") })
+		:stdout(Command.PIPED)
+		:stderr(Command.PIPED)
+		:output()
+
+	return fs.write(cache, extract_output.stdout) and 1 or 2
 end
 
 return M
-
