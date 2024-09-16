@@ -36,8 +36,11 @@ function M:preload()
 		:stderr(Command.PIPED)
 		:output()
 
+	local filenames = {}
+	for filename in awk_output.stdout:gmatch("[^\n]+") do table.insert(filenames, filename) end
+	table.sort(filenames)
 	local extract_output = Command("7z")
-		:args({ "-so", "e", tostring(self.file.url), awk_output.stdout:match("(.-)\n") })
+		:args({ "-so", "e", tostring(self.file.url), filenames[1] })
 		:stdout(Command.PIPED)
 		:stderr(Command.PIPED)
 		:output()
