@@ -30,14 +30,13 @@ function M:preload()
 		:args({ "-ba", "l", tostring(self.file.url) })
 		:stdout(Command.PIPED)
 		:stderr(Command.PIPED)
-		:output()
+		:spawn()
 
-	fs.write(cache, list_output.stdout)
 	local awk_output = Command("awk")
 		:args({
-			[[length($0) > 53 && tolower(substr($0, 54)) ~ /\.(jpg|jpeg|png|gif)$/ { print substr($0, 54) }]],
-			tostring(cache)
+			[[length($0) > 53 && tolower(substr($0, 54)) ~ /\.(jpg|jpeg|png|gif)$/ { print substr($0, 54) }]]
 		})
+		:stdin(list_output:take_stdout())
 		:stdout(Command.PIPED)
 		:stderr(Command.PIPED)
 		:output()
@@ -47,13 +46,15 @@ function M:preload()
 		table.insert(filenames, filename)
 	end
 	table.sort(filenames)
+	self.skip = self.skip >= #filenames and (#filenames - 1) or self.skip
+
 	local extract_output = Command("7z")
 		:args({ "-so", "e", tostring(self.file.url), filenames[self.skip + 1] })
 		:stdout(Command.PIPED)
 		:stderr(Command.PIPED)
 		:output()
 
-	return fs.write(cache, extract_output.stdout) and 1 or 2
+	return fs.write(ya.file_cache(self), extract_output.stdout) and 1 or 2
 end
 
 return M
