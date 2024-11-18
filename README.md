@@ -1,6 +1,6 @@
 # comicthumb.yazi
 
-Plugin for [Yazi](https://github.com/sxyazi/yazi) to preview comic book archive files using p7zip.
+Plugin for [Yazi](https://github.com/sxyazi/yazi) to preview comic book archive files using [p7zip](https://github.com/p7zip-project/p7zip).
 To install:
 
 ```bash
@@ -12,9 +12,9 @@ and reference it in your `yazi.toml`:
 ```toml
 [plugin]
 prepend_preloaders = [
-	{ name = "*.cbz", run = "comicthumb" },
+	{ name = "*.cb[7rz]", run = "comicthumb" },
 ]
 prepend_previewers = [
-	{ name = "*.cbz", run = "comicthumb" },
+	{ name = "*.cb[7rz]", run = "comicthumb" },
 ]
 ```
